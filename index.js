@@ -15,6 +15,5 @@ async function main() {
 }
 
 main().then((url) => {
-  console.debug('Program finished, url = ');
   console.debug(url);
 });
