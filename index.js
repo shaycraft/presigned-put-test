@@ -1,20 +1,14 @@
-const AWS = require('aws-sdk');
-AWS.config.update({ region: 'us-west-2' });
-const s3 = new AWS.S3();
+const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
+const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 
 async function main() {
   const bucketName = 'sam-testing-presigned-put-test';
-
   const key = 'foo/bar/messi.png';
 
-  const s3Params = {
-    Bucket: bucketName,
-    Key: key,
-    Expires: 300, // seconds
-    ContentType: 'image/png',
-  };
+  const s3 = new S3Client();
 
-  const preSignedUrl = await s3.getSignedUrlPromise('putObject', s3Params);
+  const command = new PutObjectCommand({ Bucket: bucketName, Key: key });
+  const preSignedUrl = await getSignedUrl(s3, command, { expiresIn: 300 });
   return {
     url: preSignedUrl,
   };
